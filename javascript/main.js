@@ -11,70 +11,56 @@ function solicitarDatos(){
     }
 }
 function iniciarCarrito(){
-  let lista = " " ; 
   let finalizarCarrito = false ; 
-  let total = 0
-  while (!finalizarCarrito){ 
-    let nombreProducto = prompt("Ingrese el producto que desea comprar");
-    let producto = obtenerProducto (nombreProducto); 
-    let precio = obtenerPrecio (nombreProducto) 
-    
-    if(producto){
-      lista += "\n -" + producto ; 
-      total += precio ;
-    }else{
-      if (nombreProducto === null){
-        finalizarCarrito = true ; 
-      } else {
-        alert("Ingrese un producto válido");
-      }
+  let total = 0  
+  let compra = []
+  let productosDisponibles = ["Libro mágico", "Poción", "Polvo de hadas", "Pluma de Fénix", ""]
+    while (!finalizarCarrito){
+        let nombreProducto = prompt("Ingrese el producto que desea comprar");
+          if (nombreProducto === ""){
+            finalizarCarrito = true ; 
+          } else if ( productosDisponibles.includes(nombreProducto) === false){  
+            productosDisponibles.includes(nombreProducto)
+            alert("Ingrese un producto válido");  
+          } else {
+            compra.push (nombreProducto)
+            let precio = obtenerPrecio (nombreProducto) 
+            compra.indexOf("Polvo de hadas")
+              if (compra.indexOf("Polvo de hadas") !== -1){
+                precio -= 4
+              }
+            total += precio ;
+          }
     }
-  }
-let dinero = 20 
-    if(lista != " "){ 
-    let respuesta = confirm("Desea concretar la compra de " +lista + "\n"+ "El total es $" +total); 
-    if(respuesta){
-        if(total < dinero){
-        alert("Usted compró " +lista);
-        }else if(total > dinero){
-        alert("No tiene dinero suficiente.")
-  }
+  let dinero = 20
+    if(compra != " "){ // si lista no está vacío
+      let lista = ""
+          for (let producto of compra){
+            lista += "\n -" + producto
+          }
+      let respuesta = confirm("Desea concretar la compra de " +lista + "\n" + "El total es $" +total); //confirm solo te deja responder como true o false)
+        if(respuesta){
+          if(total < dinero){ 
+            alert("Usted compró " +lista);
+          }else if(total > dinero){
+            alert("No tiene dinero suficiente.")
+          }
+        }
     }
-  } 
-}
-  function obtenerProducto (cod){
-    let producto ; 
-    switch (cod){
-      case "1":
-        producto = "Libro mágico";
-        break;
-      case "2":
-        producto = "Poción";
-        break;
-      case "3":
-        producto = "Polvo de hadas";
-        break;
-      case "4":
-        producto = "Pluma de Fenix";
-        break;
-      default:
-        producto = false; 
-    }
-    return producto
-  } 
+} 
   function obtenerPrecio (cod){
     let precio ; 
     switch (cod){
-      case "1":
+      case "Libro mágico":
         precio = 7;
         break;
-      case "2":
+      case "Poción":
         precio = 10;
         break;
-      case "3":
+      case "Polvo de hadas":
         precio = 8;
         break;
-      case "4":
+      case "Pluma de Fénix":
         precio = 12;
         break;
       default:
