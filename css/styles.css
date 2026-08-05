@@ -1,0 +1,107 @@
+/*general*/
+*{
+    margin: 0%;
+    padding: 0%;
+    box-sizing: border-box;
+}
+body{
+    margin-top: 80px;
+    margin-bottom: 80px;
+    min-height: 100vh;
+    background: linear-gradient(#000000, #271d00);
+    font-family: "Pixelify Sans", sans-serif;
+    
+}
+h1, h2, h3, h4, p{
+    color: #ffd45d;
+    font-size: 20px;
+}
+/*login*/
+#login{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+   
+}
+
+/*botones e imputs*/
+label, input, button{
+    background-color: transparent;
+    border-color: #ffbd06;
+    font-family: "Pixelify Sans", sans-serif;
+    color: #ffd45d;
+    transition: 0.5s;
+    gap: 20px;
+    width: 150px;
+    height: 30px;
+}
+input{
+    width: 250px;
+    height: 35;
+    font-size: 18px;
+}
+label{
+     display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 20px;
+}
+button:hover{
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px #ffbd06);
+}
+/*imagenes de los productos*/
+.productos{
+    width: 100px;
+    transition: 0.5s;
+}
+.productos:hover{
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px #ffbd06);
+    
+}
+#tienda{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+#botonComprar{
+    flex-basis: 100%;
+    border: transparent;
+    font-size: 30px;
+}
+/*productos del carrito*/
+.productosSeleccionados{
+    width: 100px;
+    transition: 0.5s;
+}
+.productosSeleccionados:hover{
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px #ffbd06);
+    
+}
+/*pfp de los usuarios*/
+.dibujos-usuarios{
+    width: 200px;
+}
+/*carrito*/
+#carrito{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+#confirmacion{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+.productosConfirmacion{
+    width: 100px;
+}
