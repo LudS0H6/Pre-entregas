@@ -3,7 +3,7 @@ const botonIngresar = document.querySelector("#botonIngresar")
 const usuarioHtml = document.querySelector("#usuarioHtml")
 const passwordHtml = document.querySelector("#passwordHtml")
 const login = document.querySelector("#login")
-
+const mensajeLogin = document.querySelector("#mensajeLogin")
 //iniciar sesión de usuario
 let usuarioLogueado; 
 class Usuario {
@@ -24,17 +24,16 @@ class Usuario {
   let usuarioIngresado = usuarioHtml.value;
   const usuario = usuariosExistentes.find(persona => persona.user === usuarioIngresado); 
     if(!usuario){ 
-    alert("Ese usuario no existe")
+      mensajeLogin.innerHTML = "Ese usuario no existe"
     }else{
     //Contraseña
   let passIngresada = passwordHtml.value;
     if (passIngresada === usuario.password){
       usuarioLogueado = usuario
-      console.log("Iniciaste sesión")
       login.remove()
       mostrarTienda()
     }else{
-      alert ("Contraseña incorrecta");
+      mensajeLogin.innerHTML = "Contraseña incorrecta";
     }
   }
 });
@@ -101,7 +100,6 @@ function activarEventos(){
     const producto = productosDisponibles.find(
     p => p.nombre === imagen.dataset.nombre
   );
-  console.log(producto.nombre);
   compra.push(producto);
   mostrarCarrito();
     });
