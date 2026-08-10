@@ -12,12 +12,13 @@ class Usuario {
    this.password = password
    this.dinero = dinero
    this.pfp = pfp
+   //this.carritoUsuario = carritoUsuario 
  }
 }
 //Instancias (usuarios)
-    const usuario1 = new Usuario("Maguito", "1234", 30, "../images/maguito.png")
-    const usuario2 = new Usuario("Elfo", "5678", 45, "../images/elfo.png")
-    const usuario3 = new Usuario("Duende", "9000", 15, "../images/duende.png")
+    const usuario1 = new Usuario("Maguito", "1234", 30, "images/maguito.png")
+    const usuario2 = new Usuario("Elfo", "5678", 45, "images/elfo.png")
+    const usuario3 = new Usuario("Duende", "9000", 15, "images/duende.png")
       let usuariosExistentes = [usuario1, usuario2, usuario3];
 //login
   botonIngresar.addEventListener('click', () => {
@@ -38,7 +39,6 @@ class Usuario {
   }
 });
 //Sesión iniciada
-let compra = []
 //Productos
 class Producto {
  constructor(nombre, id, precio, promocion, imagen) {
@@ -50,7 +50,7 @@ class Producto {
  }
  // Método para calcular si el producto tiene promoción"
  calcularPromocion() {
-    if (this.promocion === true){
+   if (this.promocion === true){
         return this.precio * 0.75 
     } else{ 
     return this.precio
@@ -58,15 +58,22 @@ class Producto {
  }
 }
 // Instancias (productos)
-    const producto1 = new Producto("Libro Mágico", "1", 7, false, "../images/libro.png")
-    const producto2 = new Producto("Poción", "2", 10, false, "../images/pocion.png")
-    const producto3 = new Producto("Polvo de hadas", "3", 8, true, "../images/polvo.png")
-    const producto4 = new Producto("Pluma de Fénix", "4", 16, false, "../images/pluma.png")
-    const producto5 = new Producto("Escama de dragón", "5", 29, false, "../images/escama.png")
-    const producto6 = new Producto("Huevo dorado", "6", 50, false, "../images/huevo.png")
-    const producto7 = new Producto("Cristal encantado", "7", 8, true, "../images/cristal.png")
-    const producto8 = new Producto("Musgo misterioso", "8", 5, false, "../images/musgo.png")
+    const producto1 = new Producto("Libro Mágico", "1", 7, false, "images/libro.png")
+    const producto2 = new Producto("Poción", "2", 10, false, "images/pocion.png")
+    const producto3 = new Producto("Polvo de hadas", "3", 8, true, "images/polvo.png")
+    const producto4 = new Producto("Pluma de Fénix", "4", 16, false, "images/pluma.png")
+    const producto5 = new Producto("Escama de dragón", "5", 29, false, "images/escama.png")
+    const producto6 = new Producto("Huevo dorado", "6", 50, false, "images/huevo.png")
+    const producto7 = new Producto("Cristal encantado", "7", 8, true, "images/cristal.png")
+    const producto8 = new Producto("Musgo misterioso", "8", 5, false, "images/musgo.png")
 let productosDisponibles = [producto1, producto2, producto3, producto4, producto5, producto6, producto7, producto8]
+
+const productosGuardados =
+    JSON.parse(localStorage.getItem("compra")) || [];
+
+let compra = productosGuardados.map(id =>
+    productosDisponibles.find(producto => producto.id === id)
+);
 //Etapa 2: Mostrar la tienda
 function mostrarTienda(){
 //mostrar los datos del usuario
@@ -79,15 +86,17 @@ function mostrarTienda(){
 //mostrar los productos
   const tiendaHtml = document.querySelector("#tienda")
   tiendaHtml.innerHTML = "";
+
   productosDisponibles.forEach(producto => {
+    const { nombre, precio, imagen } = producto;
     tiendaHtml.innerHTML += `
-      <div>
-        <img src="${producto.imagen}" alt="" class="productos" data-nombre="${producto.nombre}">
-        <h3>${producto.nombre}</h3>
-        <p>$${producto.precio}</p>
-      </div>
+        <div>
+            <img src="${imagen}" alt="" class="productos" data-nombre="${nombre}">
+            <h3>${nombre}</h3>
+            <p>$${precio}</p>
+        </div>
     `;
-  });
+});
   mostrarCarrito()
   crearBotonComprar();
   activarEventos ()
@@ -101,6 +110,9 @@ function activarEventos(){
     p => p.nombre === imagen.dataset.nombre
   );
   compra.push(producto);
+  //WebStorage
+    localStorage.setItem("compra",
+      JSON.stringify(compra.map(producto => producto.id)));
   mostrarCarrito();
     });
   });
@@ -125,6 +137,9 @@ function eliminarProducto (){
     imagen.addEventListener("click", () => {      
       const indice = compra.findIndex(producto => producto.nombre === imagen.dataset.nombre);
       compra.splice(indice, 1);
+      //eliminar del Web Storage
+        localStorage.setItem("compra",
+          JSON.stringify(compra));
       mostrarCarrito()
     });
   })
@@ -157,12 +172,8 @@ function confirmarCompra(){
   confirmacion.innerHTML += `<button id="botonAceptar" type="button">Aceptar</button>`;
   const botonAceptar = document.querySelector("#botonAceptar");
   botonAceptar.addEventListener("click", () => {
-    if(total <= usuarioLogueado.dinero){
-      confirmacion.innerHTML = `
-    <p>La compra se realizó con éxito</p>`
-    }else if(total > usuarioLogueado.dinero){
-      confirmacion.innerHTML = `
-    <p>"No tiene dinero suficiente."</p>`
-    }
+    confirmacion.innerHTML = total <= usuarioLogueado.dinero //condición
+      ? `<p>La compra se realizó con éxito</p>`//if
+      : `<p>"No tiene dinero suficiente."</p>` //else
   });
 };
