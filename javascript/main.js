@@ -6,13 +6,13 @@ const login = document.querySelector("#login")
 const mensajeLogin = document.querySelector("#mensajeLogin")
 //iniciar sesión de usuario
 let usuarioLogueado; 
+let compra = []
 class Usuario {
  constructor(user, password, dinero, pfp) {
    this.user = user
    this.password = password
    this.dinero = dinero
    this.pfp = pfp
-   //this.carritoUsuario = carritoUsuario 
  }
 }
 //Instancias (usuarios)
@@ -31,13 +31,37 @@ class Usuario {
   let passIngresada = passwordHtml.value;
     if (passIngresada === usuario.password){
       usuarioLogueado = usuario
-      login.remove()
+      cargarCarritoUsuario()
+      //login.remove()
+      login.style.display = "none" //nota para mí: no borra el login como lo haría el remove, solo lo oculta
       mostrarTienda()
     }else{
       mensajeLogin.innerHTML = "Contraseña incorrecta";
     }
   }
 });
+//carritos de cada usuario
+function cargarCarritoUsuario() {
+  const claveCarrito = `compra_${usuarioLogueado.user}`;
+  const claveDinero = `dinero_${usuarioLogueado.user}`;
+  const dineroGuardado = 
+  JSON.parse(localStorage.getItem(claveDinero));
+  if(dineroGuardado !== null){
+    usuarioLogueado.dinero = dineroGuardado
+  };
+  try{
+      const productosGuardados =
+          JSON.parse(localStorage.getItem(claveCarrito)) || [];
+      compra = productosGuardados.map(id =>
+          productosDisponibles.find(producto => producto.id === id)
+      );
+  }catch(error) {
+    console.log("No se pudo cargar el carrito:", error);
+    compra = []
+  }finally{
+    console.log("Carga del carrito finalizada");
+  }
+}
 //Sesión iniciada
 //Productos
 class Producto {
@@ -67,13 +91,11 @@ class Producto {
     const producto7 = new Producto("Cristal encantado", "7", 8, true, "images/cristal.png")
     const producto8 = new Producto("Musgo misterioso", "8", 5, false, "images/musgo.png")
 let productosDisponibles = [producto1, producto2, producto3, producto4, producto5, producto6, producto7, producto8]
-
-const productosGuardados =
+/*const productosGuardados =
     JSON.parse(localStorage.getItem("compra")) || [];
-
 let compra = productosGuardados.map(id =>
     productosDisponibles.find(producto => producto.id === id)
-);
+);*/
 //Etapa 2: Mostrar la tienda
 function mostrarTienda(){
 //mostrar los datos del usuario
@@ -82,24 +104,30 @@ function mostrarTienda(){
   <img src="${usuarioLogueado.pfp}" alt="" class="dibujos-usuarios">
   <h2>${usuarioLogueado.user}</h2>
   <p>Dinero: $${usuarioLogueado.dinero}</p>
+  <button id="botonCerrarSesion" type="button">Cerrar sesión</button>
   `
+  const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
+  botonCerrarSesion.addEventListener("click", cerrarSesion);
 //mostrar los productos
   const tiendaHtml = document.querySelector("#tienda")
   tiendaHtml.innerHTML = "";
-
-  productosDisponibles.forEach(producto => {
+    productosDisponibles.forEach((producto, index) => {
     const { nombre, precio, imagen } = producto;
-    tiendaHtml.innerHTML += `
-        <div>
+      setTimeout(() => {
+        tiendaHtml.insertAdjacentHTML("beforeend", `
+          <div class="producto-apareciendo">
             <img src="${imagen}" alt="" class="productos" data-nombre="${nombre}">
             <h3>${nombre}</h3>
             <p>$${precio}</p>
-        </div>
-    `;
-});
+          </div>
+        `);
+      }, index * 500);
+    });
   mostrarCarrito()
-  crearBotonComprar();
-  activarEventos ()
+    setTimeout(() => { 
+      crearBotonComprar();
+      activarEventos ()
+    }, productosDisponibles.length * 500)
 };
 //Activar el click de los productos
 function activarEventos(){
@@ -111,7 +139,7 @@ function activarEventos(){
   );
   compra.push(producto);
   //WebStorage
-    localStorage.setItem("compra",
+    localStorage.setItem(`compra_${usuarioLogueado.user}`,
       JSON.stringify(compra.map(producto => producto.id)));
   mostrarCarrito();
     });
@@ -137,13 +165,29 @@ function eliminarProducto (){
     imagen.addEventListener("click", () => {      
       const indice = compra.findIndex(producto => producto.nombre === imagen.dataset.nombre);
       compra.splice(indice, 1);
-      //eliminar del Web Storage
-        localStorage.setItem("compra",
-          JSON.stringify(compra));
+//eliminar del Web Storage
+localStorage.setItem(`compra_${usuarioLogueado.user}`,
+  JSON.stringify(compra.map(producto => producto.id)));
       mostrarCarrito()
     });
   })
 }
+//BOTONES
+//botón de cerrar sesión
+function cerrarSesion() {
+  usuarioLogueado = null;
+  compra = [];
+  document.querySelector("#tienda").innerHTML = "";
+  document.querySelector("#carrito").innerHTML = "";
+  document.querySelector("#confirmacion").innerHTML = "";
+   document.querySelector("#perfil").innerHTML = "";
+    login.style.display = "";
+}
+document.addEventListener("keydown", (evento) => {
+  if (evento.key === "Escape" && usuarioLogueado) {
+    cerrarSesion();
+  }
+});
 //botón de la compra
 function crearBotonComprar ( ){
   const tiendaHtml = document.querySelector("#tienda")
@@ -153,7 +197,7 @@ function crearBotonComprar ( ){
     confirmarCompra()
   });
 }
-//Cuando finalizas el carrito
+//Etapa 3: Cuando finalizas el carrito
 function confirmarCompra(){
   let total = 0;
   compra.forEach(producto => {
@@ -171,9 +215,35 @@ function confirmarCompra(){
   confirmacion.innerHTML += `<p>Total: $${total}</p>`
   confirmacion.innerHTML += `<button id="botonAceptar" type="button">Aceptar</button>`;
   const botonAceptar = document.querySelector("#botonAceptar");
-  botonAceptar.addEventListener("click", () => {
-    confirmacion.innerHTML = total <= usuarioLogueado.dinero //condición
-      ? `<p>La compra se realizó con éxito</p>`//if
-      : `<p>"No tiene dinero suficiente."</p>` //else
-  });
+botonAceptar.addEventListener("click", () => {
+  if (total <= usuarioLogueado.dinero) {
+    usuarioLogueado.dinero -= total;
+    localStorage.setItem(
+      `dinero_${usuarioLogueado.user}`,
+      JSON.stringify(usuarioLogueado.dinero)
+    );
+    actualizarPerfil()
+    const dineroRestante = usuarioLogueado.dinero;
+    confirmacion.innerHTML = `
+      <p>La compra se realizó con éxito</p>
+    `;
+  } else {
+    confirmacion.innerHTML = `
+      <p>No tiene dinero suficiente.</p>
+    `;
+  }
+});
 };
+//actualizar el precio después de cada compra
+function actualizarPerfil() {
+  const perfil = document.querySelector("#perfil");
+  perfil.innerHTML = `
+    <img src="${usuarioLogueado.pfp}" alt="" class="dibujos-usuarios">
+    <h2>${usuarioLogueado.user}</h2>
+    <p>Dinero: $${usuarioLogueado.dinero}</p>
+    <button id="botonCerrarSesion" type="button">Cerrar sesión</button>
+  `;
+  const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
+  botonCerrarSesion.addEventListener("click", cerrarSesion);
+}
+

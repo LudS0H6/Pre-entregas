@@ -67,11 +67,48 @@ button:hover{
     justify-content: center;
     gap: 20px;
 }
+
+.producto-apareciendo {
+  animation: aparecerProducto 0.6s ease forwards;
+}
+
+@keyframes aparecerProducto {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+/*#tienda > div {
+  animation: aparecerProducto 0.6s ease forwards;
+}
+
+@keyframes aparecerProducto {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}*/
+
+
+
 #botonComprar{
     flex-basis: 100%;
     border: transparent;
     font-size: 30px;
 }
+
 /*productos del carrito*/
 .productosSeleccionados{
     width: 100px;
