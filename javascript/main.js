@@ -33,7 +33,7 @@ class Usuario {
       usuarioLogueado = usuario
       cargarCarritoUsuario()
       //login.remove()
-      login.style.display = "none" //nota para mí: no borra el login como lo haría el remove, solo lo oculta
+      login.style.display = "none"
       mostrarTienda()
     }else{
       mensajeLogin.innerHTML = "Contraseña incorrecta";
@@ -91,11 +91,6 @@ class Producto {
     const producto7 = new Producto("Cristal encantado", "7", 8, true, "images/cristal.png")
     const producto8 = new Producto("Musgo misterioso", "8", 5, false, "images/musgo.png")
 let productosDisponibles = [producto1, producto2, producto3, producto4, producto5, producto6, producto7, producto8]
-/*const productosGuardados =
-    JSON.parse(localStorage.getItem("compra")) || [];
-let compra = productosGuardados.map(id =>
-    productosDisponibles.find(producto => producto.id === id)
-);*/
 //Etapa 2: Mostrar la tienda
 function mostrarTienda(){
 //mostrar los datos del usuario
@@ -246,4 +241,3 @@ function actualizarPerfil() {
   const botonCerrarSesion = document.querySelector("#botonCerrarSesion");
   botonCerrarSesion.addEventListener("click", cerrarSesion);
 }
-
